@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:form id="formEdicao">
+        <h:panelGroup rendered="#{controleResgate.editando}">
+            <div class="ui-fluid">
+                <p:messages/>
+                <p:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-20"
+                             layout="grid" styleClass="ui-panelgrid-blank">
+                    <f:facet name="header">
+                        <p:outputLabel value="Edição de Resgates"/>
+                    </f:facet>
+                    <p:outputLabel for="txtID" value="ID"/>
+                    <p:inputText id="txtID" value="#{controleResgate.objeto.id}" readonly="true"
+                                 size="10"/>
+                    <p:outputLabel for="txtData" value="Data"/>
+                    <p:calendar id="txtData" value="#{controleResgate.objeto.data}"
+                                mask="true" pattern="dd/MM/yyyy"
+                                placeholder="Obrigatório"
+                                navigator="true">
+                        <f:converter converterId="converterCalendar"/>
+                    </p:calendar>
+                    <p:outputLabel for="txtSituacao" value="Situacao"/>
+                    <p:inputText id="txtSituacao" value="#{controleResgate.objeto.situacao}"
+                                 size="40" maxlength="40"       
+                                 placeholder="Obrigatório"/>
+                    <p:outputLabel for="txtLocal" value="Local"/>
+                    <p:inputText id="txtLocal" value="#{controleResgate.objeto.local}"
+                                 size="50" maxlength="50"
+                                 placeholder="Obrigatório"/>                    
+                    <p:outputLabel value="Descricao" for="txtDescricao"/>
+                    <p:inputText id="txtDescricao" value="#{controleResgate.objeto.descricao}"
+                                 size="30" maxlength="30" placeholder="Obrigatório"/>
+                    <p:outputLabel value="Animal" for="selectAnimal"/>
+                    <p:selectOneMenu id="selectAnimal" value="#{controleResgate.objeto.animal}">
+                        <f:converter converterId="converterAnimal"/>
+                        <f:selectItem itemLabel="Selecione um registro"
+                                      noSelectionOption="true"/>
+                        <f:selectItems value="#{controleResgate.daoAnimal.listaTodos}"
+                                       var="a" itemLabel="#{a.nome}"/>
+                    </p:selectOneMenu>                    
+                    <p:commandButton value="Salvar" icon="ui-icon-disk"
+                                     actionListener="#{controleResgate.salvar()}"
+                                     update="formEdicao :formListagem"/>
+                </p:panelGrid>
+                <h:panelGroup id="painelResponsavel">
+                    <p:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-20"
+                        layout="grid" styleClass="ui-panelgrid-blank"
+                        rendered="#{controleResgate.editandoResponsavel}">
+                        <f:facet name="header">
+                            <p:outputLabel value="Novo responsavel pelo resgate"/>
+                        </f:facet>             
+                        <p:outputLabel value="Responsavel"/>
+                        <p:selectOneMenu id="selectResponsavel" value="#{controleResgate.responsavel}">
+                            <f:selectItem itemLabel="Selecione um registro" 
+                                          noSelectionOption="true"/>
+                            <f:selectItems value="#{controleResgate.daoResponsavel.listaTodos}"
+                                           var="r" itemLabel="#{r.nome}"/>
+                            <f:converter converterId="converterResponsavel"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value=""/>
+                        <p:commandButton value="Salvar Responsavel" icon="ui-icon-disk"
+                                         actionListener="#{controleResgate.salvarResponsavel()}"
+                                         id="btnSalvarResponsavel"
+                                         process="btnSalvarResponsavel selectResponsavel"
+                                         update="@form"/>
+                    </p:panelGrid>
+                </h:panelGroup>
+            </div>
+            <h:panelGroup id="listagemResponsaveis">
+                <h:panelGroup rendered="#{!controleResgate.editandoResponsavel}">
+                    <p:commandButton value="Nova permissão" icon="ui-icon-plus"
+                                     actionListener="#{controleResgate.novoResponsavel()}"
+                                     update="painelResponsavel listagemResponsaveis"
+                                     process="@this"/>
+                    <p:dataTable value="#{controleResgate.objeto.responsaveis}"
+                                 var="resp" reflow="true">
+                        <f:facet name="header">
+                            <p:outputLabel value="Responsaveis pelo resgate"/>
+                        </f:facet>
+                        <p:column headerText="Nome">
+                            <p:outputLabel value="#{resp.nome}"/>
+                        </p:column>
+                        <p:column headerText="Telefone">
+                            <p:outputLabel value="#{resp.telefone}"/>
+                        </p:column>
+                        <p:column headerText="Ações">
+                            <div align="center">
+                                <p:commandButton icon="ui-icon-trash"
+                                  actionListener="#{controleResgate.removerResponsavel(resp)}"
+                                  process="@this" update="@form"/>
+                            </div>
+                        </p:column>                        
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:panelGroup>
+    </h:form>
+</html>
+
